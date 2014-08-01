@@ -26,15 +26,30 @@ Public Class UDPSender
         End Try
     End Sub
 
-    Public Function UpdateLightStatus(ByVal pin As Integer, ByVal value As Integer) As String
+    Public Function SetPinSolid(ByVal pin As Integer, ByVal value As Integer) As String
         Dim udpClient As New UdpClient
-        Dim sendBytes As [Byte]() = Encoding.ASCII.GetBytes(pin.ToString & value.ToString)
+        Dim sendBytes As Byte() = Encoding.ASCII.GetBytes(pin.ToString & value.ToString)
         SendUDPData(sendBytes)
 
         Return "Pin: " & pin.ToString() & " Value: " & value.ToString() & vbCrLf
     End Function
 
-    Public Function UpdateLightStatusBlink(ByVal pin As Integer, ByVal onOffvalue As Integer, ByVal speed As Integer) As String
+    Public Function SetAllSolid(ByVal onOffvalue As Integer) As String
+        Dim sendAllSolidThread = New Thread(AddressOf SendAllSolid)
+        sendAllSolidThread.Start(onOffvalue)
+
+        Return "Set all pins = " & onOffvalue & vbCrLf
+    End Function
+
+    Private Sub SendAllSolid(ByVal onOffValue As Integer)
+        Dim sendBytes As Byte()
+        For pin As Integer = 0 To _pinCount
+            sendBytes = Encoding.ASCII.GetBytes(pin.ToString & onOffValue.ToString)
+            SendUDPData(sendBytes)
+        Next
+    End Sub
+
+    Public Function BlinkPin(ByVal pin As Integer, ByVal onOffvalue As Integer, ByVal speed As Integer) As String
         Dim cd As New ControlData
         cd.SendBytesOn = Encoding.ASCII.GetBytes(pin.ToString & 1)
         cd.SendBytesOff = Encoding.ASCII.GetBytes(pin.ToString & 0)
@@ -46,21 +61,6 @@ Public Class UDPSender
 
         Return "Blink Pin: " & pin.ToString() + " Value: " & onOffvalue.ToString() & vbCrLf
     End Function
-
-    Public Function UpdateLightStatusSolidAll(ByVal onOffvalue As Integer) As String
-        Dim sendAllSolidThread = New Thread(AddressOf SendAllSolid)
-        sendAllSolidThread.Start(onOffvalue)
-
-        Return "Set all pins = " & onOffvalue & vbCrLf
-    End Function
-
-    Private Sub SendAllSolid(ByVal onOffValue As Integer)
-        Dim sendBytes As [Byte]()
-        For pin As Integer = 0 To _pinCount
-            sendBytes = Encoding.ASCII.GetBytes(pin.ToString & onOffValue.ToString)
-            SendUDPData(sendBytes)
-        Next
-    End Sub
 
     Private Sub SendBlink(ByVal cd As ControlData)
         Do While _isActive

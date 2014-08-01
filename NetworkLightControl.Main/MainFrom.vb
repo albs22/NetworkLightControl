@@ -70,11 +70,11 @@ Public Class MainFrom
 
     Private Sub SolidSwitch(ByVal pin As Integer, ByVal button As Button)
         If button.Text = "On" Then
-            txtLog.Text &= _udpSender.UpdateLightStatus(pin, 0)
+            txtLog.Text &= _udpSender.SetPinSolid(pin, 0)
             button.BackColor = Color.Firebrick
             button.Text = "Off"
         Else
-            txtLog.Text += _udpSender.UpdateLightStatus(pin, 1)
+            txtLog.Text += _udpSender.SetPinSolid(pin, 1)
             button.BackColor = Color.Green
             button.Text = "On"
         End If
@@ -82,11 +82,11 @@ Public Class MainFrom
 
     Private Sub BlinkSwitch(ByVal pin As Integer, ByVal button As Button, ByVal speed As String)
         If button.Text = "On" Then
-            txtLog.Text += _udpSender.UpdateLightStatusBlink(pin, 0, ParseSpeed(speed))
+            txtLog.Text += _udpSender.BlinkPin(pin, 0, ParseSpeed(speed))
             button.BackColor = Color.Firebrick
             button.Text = "Off"
         Else
-            txtLog.Text += _udpSender.UpdateLightStatusBlink(pin, 1, ParseSpeed(speed))
+            txtLog.Text += _udpSender.BlinkPin(pin, 1, ParseSpeed(speed))
             button.BackColor = Color.Green
             button.Text = "On"
         End If
@@ -152,7 +152,7 @@ Public Class MainFrom
         ' Dim pinCount As Integer = 7
         Select Case cboStyleAll.SelectedItem.ToString
             Case "Solid"
-                txtLog.Text &= _udpSender.UpdateLightStatusSolidAll(onOffvalue)
+                txtLog.Text &= _udpSender.SetAllSolid(onOffvalue)
             Case "Blink"
                 'txtLog.Text &= _udpSender.UpdateLightStatusBlinkAll(pinCount, value, speed)
             Case "Cascade"
